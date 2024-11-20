@@ -18,7 +18,8 @@ class CategoryListAPIView(ListAPIView):
 
 
 class ProductViewSet(ModelViewSet):
-    """ """
+    """ Класс ViewSet для модели Product """
+
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     parser_classes = (MultiPartParser, FormParser)
@@ -27,4 +28,3 @@ class ProductViewSet(ModelViewSet):
         if self.action == 'create':
             return ProductCreateSerializer
         return ProductSerializer
-

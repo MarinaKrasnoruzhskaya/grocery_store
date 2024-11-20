@@ -1,4 +1,3 @@
-from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
@@ -7,6 +6,8 @@ from catalog.models import Subcategory, Category, Product, ProductImage
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """ Класс-сериализатор для категории со списком подкатегорий"""
+
     subcategory = SerializerMethodField()
 
     @extend_schema_field({"type": "array", "items": Subcategory})
@@ -19,12 +20,15 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class SubcategorySerializer(serializers.ModelSerializer):
+    """ Класс-сериализатор для подкатегории"""
+
     class Meta:
         model = Subcategory
         fields = ("name",)
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
+    """ Класс-сериализатор для изображения продукта"""
 
     class Meta:
         model = ProductImage
@@ -32,6 +36,8 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
+    """ Класс-сериализатор для создания продукта с загрузкой изображений """
+
     uploaded_images = serializers.ListField(
         child=serializers.ImageField(allow_empty_file=False, use_url=False),
         write_only=True,
@@ -55,6 +61,8 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    """ Класс-сериализатор для продукта с подкатегорией, категорией и списком изображений"""
+
     subcategory = SerializerMethodField(read_only=True)
     category = SerializerMethodField()
     product_images = ProductImageSerializer(many=True, read_only=True)

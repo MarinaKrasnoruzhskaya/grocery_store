@@ -1,4 +1,3 @@
-from autoslug import AutoSlugField
 from django.db import models
 from pytils.translit import slugify
 
