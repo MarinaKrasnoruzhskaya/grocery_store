@@ -1,5 +1,6 @@
+from autoslug import AutoSlugField
 from django.db import models
-from django.utils.text import slugify
+from pytils.translit import slugify
 
 
 class Category(models.Model):
@@ -11,7 +12,7 @@ class Category(models.Model):
         verbose_name="Наименование",
         help_text="Введите наименование категории"
     )
-    slug_name = models.SlugField(max_length=255, unique=True, blank=True, null=True, verbose_name="slug-имя")
+    slug = models.SlugField(unique=True, blank=True, null=True, max_length=255)
     image = models.ImageField(
         upload_to='catalog/category/',
         blank=True,
@@ -20,13 +21,13 @@ class Category(models.Model):
         help_text="Загрузите изображение для категории"
     )
 
-    def save(self, *args, **kwargs):
-        if not self.slug_name:
-            self.slug_name = slugify(self.name)
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.id and not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Категория"
@@ -50,7 +51,7 @@ class Subcategory(models.Model):
         verbose_name="Наименование",
         help_text="Введите наименование подкатегории"
     )
-    slug_name = models.SlugField(max_length=255, unique=True, blank=True, null=True, verbose_name="slug-имя")
+    slug = models.SlugField(unique=True, blank=True, null=True, max_length=255)
     image = models.ImageField(
         upload_to='catalog/subcategory/',
         blank=True,
@@ -59,13 +60,13 @@ class Subcategory(models.Model):
         help_text="Загрузите изображение для подкатегории"
     )
 
-    def save(self, *args, **kwargs):
-        if not self.slug_name:
-            self.slug_name = slugify(self.name)
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.id and not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Подкатегория"
@@ -89,14 +90,7 @@ class Product(models.Model):
         verbose_name="Наименование",
         help_text="Введите наименование продукта"
     )
-    slug_name = models.SlugField(max_length=255, unique=True, blank=True, null=True, verbose_name="slug-имя")
-    image = models.ImageField(
-        upload_to='catalog/product/',
-        blank=True,
-        null=True,
-        verbose_name="Изображение",
-        help_text="Загрузите изображение для продукта в 3-х размерах"
-    )
+    slug = models.SlugField(unique=True, blank=True, null=True, max_length=255)
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -104,15 +98,34 @@ class Product(models.Model):
         help_text="Введите цену продукта"
     )
 
-    def save(self, *args, **kwargs):
-        if not self.slug_name:
-            self.slug_name = slugify(self.name)
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.id and not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
         ordering = ['name',]
+
+
+class ProductImage(models.Model):
+    """ Класс для модели Изображение продукта """
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        verbose_name="Продукт",
+        related_name="product_images",
+    )
+    image = models.ImageField(
+        upload_to='catalog/product_image/',
+        verbose_name="Изображение",
+        help_text="Загрузите изображение для продукта"
+    )
+
+    def __str__(self):
+        return self.product.name
