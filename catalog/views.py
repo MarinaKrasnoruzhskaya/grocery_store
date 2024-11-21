@@ -1,7 +1,5 @@
-from rest_framework import request, status
 from rest_framework.generics import ListAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from catalog.models import Category, Product
