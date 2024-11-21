@@ -23,6 +23,7 @@ class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     parser_classes = (MultiPartParser, FormParser)
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         if self.action == 'create':
