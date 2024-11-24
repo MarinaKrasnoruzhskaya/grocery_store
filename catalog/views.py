@@ -1,10 +1,10 @@
+from rest_framework import mixins, viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.viewsets import ModelViewSet
 
 from catalog.models import Category, Product
 from catalog.pagination import CustomPagination
-from catalog.serializers import CategorySerializer, ProductSerializer, ProductCreateSerializer
+from catalog.serializers import CategorySerializer, ProductSerializer
 
 
 class CategoryListAPIView(ListAPIView):
@@ -15,15 +15,16 @@ class CategoryListAPIView(ListAPIView):
     pagination_class = CustomPagination
 
 
-class ProductViewSet(ModelViewSet):
+class ProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """ Класс ViewSet для модели Product """
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     parser_classes = (MultiPartParser, FormParser)
     pagination_class = CustomPagination
+    http_method_names = ['get',]
 
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return ProductCreateSerializer
-        return ProductSerializer
+    # def get_serializer_class(self):
+    #     if self.action == 'create':
+    #         return ProductCreateSerializer
+    #     return ProductSerializer

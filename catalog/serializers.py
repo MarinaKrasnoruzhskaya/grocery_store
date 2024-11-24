@@ -34,29 +34,29 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ("image",)
 
 
-class ProductCreateSerializer(serializers.ModelSerializer):
-    """ Класс-сериализатор для создания продукта с загрузкой изображений """
-
-    uploaded_images = serializers.ListField(
-        child=serializers.ImageField(allow_empty_file=False, use_url=False),
-        write_only=True,
-        min_length=3,
-        max_length=3,
-        allow_empty=False
-    )
-
-    class Meta:
-        model = Product
-        fields = ("subcategory", "name", "price", "uploaded_images")
-
-    def create(self, validated_data):
-        uploaded_images = validated_data.pop("uploaded_images")
-        product = Product.objects.create(**validated_data)
-
-        for image in uploaded_images:
-            ProductImage.objects.create(product=product, image=image)
-
-        return product
+# class ProductCreateSerializer(serializers.ModelSerializer):
+#     """ Класс-сериализатор для создания продукта с загрузкой изображений """
+#
+#     uploaded_images = serializers.ListField(
+#         child=serializers.ImageField(allow_empty_file=False, use_url=False),
+#         write_only=True,
+#         min_length=3,
+#         max_length=3,
+#         allow_empty=False
+#     )
+#
+#     class Meta:
+#         model = Product
+#         fields = ("subcategory", "name", "price", "uploaded_images")
+#
+#     def create(self, validated_data):
+#         uploaded_images = validated_data.pop("uploaded_images")
+#         product = Product.objects.create(**validated_data)
+#
+#         for image in uploaded_images:
+#             ProductImage.objects.create(product=product, image=image)
+#
+#         return product
 
 
 class ProductSerializer(serializers.ModelSerializer):
