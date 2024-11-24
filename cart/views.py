@@ -48,14 +48,34 @@ class CartCleanAPIView(APIView):
             return Response(serializer.errors, status=400)
 
 
-class CartProductViewSet(ModelViewSet):
-    """ Класс для работы с продуктами в корзине """
+class CartProductAPIView(APIView):
+    """ Класс для добавления продукта в корзину авторизованного пользователя, изменения количества или удаления """
 
     queryset = CartProduct.objects.all()
+    serializer_class = CartProductSerializer
     permission_classes = [IsAuthenticated, IsOwner]
     http_method_names = ['post', 'patch', 'delete']
 
-    def get_serializer_class(self):
-        if self.action == "partial_update":
-            return CartProductUpdateSerializer
-        return CartProductSerializer
+    def post(self, request):
+        user = self.request.user
+        cart = Cart.objects.get(user=user)
+        serializer = CartProductSerializer(data=request.data)
+
+        if serializer.is_valid():
+            product_id = serializer.validated_data['product_id']
+            quantity = serializer.validated_data['quantity']
+            product_cart, created = CartProduct.objects.get_or_create(cart=cart, product_id=product_id)
+            if created and quantity:
+                product_cart.quantity = quantity
+                product_cart.save()
+                return Response(serializer.data, status=201)
+            if quantity:
+                product_cart.quantity += quantity
+                product_cart.save()
+                data = {"product_id": product_id, "quantity": product_cart.quantity}
+                return Response(data=data)
+            if not quantity:
+                product_cart.delete()
+                return Response(status=204)
+        else:
+            return Response(serializer.errors, status=400)

@@ -62,20 +62,6 @@ class CartProductSerializer(serializers.ModelSerializer):
         model = CartProduct
         fields = ('product_id', 'quantity')
 
-    def create(self, validated_data):
-        user = self.context['request'].user
-        cart = Cart.objects.get(user=user)
-        product_id = validated_data['product_id']
-        product = Product.objects.get(pk=product_id)
-        quantity = validated_data['quantity']
-        product_add_cart, created = CartProduct.objects.get_or_create(cart=cart, product=product)
-        if not created:
-            product_add_cart.quantity += quantity
-        else:
-            product_add_cart.quantity = quantity
-        product_add_cart.save()
-        return product_add_cart
-
 
 class CartProductUpdateSerializer(serializers.ModelSerializer):
 
