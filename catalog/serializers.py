@@ -1,4 +1,3 @@
-from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
@@ -10,8 +9,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
     subcategory = SerializerMethodField()
 
-    @extend_schema_field({"type": "array", "items": Subcategory})
-    def get_subcategory(self, category):
+    @staticmethod
+    def get_subcategory(category) -> list[str]:
         return [subcategory.name for subcategory in Subcategory.objects.filter(category=category)]
 
     class Meta:
@@ -71,8 +70,10 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ("name", "slug", "category", "subcategory", "price", "product_images")
 
-    def get_category(self, obj):
+    @staticmethod
+    def get_category(obj) -> str:
         return obj.subcategory.category.name
 
-    def get_subcategory(self, obj):
+    @staticmethod
+    def get_subcategory(obj) -> str:
         return obj.subcategory.name

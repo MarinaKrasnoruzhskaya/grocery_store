@@ -1,5 +1,6 @@
 from rest_framework.generics import CreateAPIView
 
+from cart.models import Cart
 from users.models import User
 from users.serializers import UserSerializer
 
@@ -16,3 +17,4 @@ class UserCreateAPIView(CreateAPIView):
         user = serializer.save(is_active=True)
         user.set_password(user.password)
         user.save()
+        Cart.objects.create(user=user)
