@@ -1,3 +1,4 @@
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,9 +19,11 @@ class CartAPIView(APIView):
     def get(self, request):
 
         user = self.request.user
-        cart = Cart.objects.get(user=user)
-        serializer = CartSerializer(cart)
-        return Response(serializer.data)
+        if Cart.objects.filter(user=user).exists():
+            cart = Cart.objects.get(user=user)
+            serializer = CartSerializer(cart)
+            return Response(serializer.data)
+        return Response(status=status.HTTP_403_FORBIDDEN, data={"message": "Нельзя просматривать чужую корзину"})
 
     def get_queryset(self):
         """ Получаем корзину текущего пользователя """
@@ -35,7 +38,7 @@ class CartCleanAPIView(APIView):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated, IsOwner]
-    http_method_names = ['patch', 'delete']
+    http_method_names = ['patch', 'delete', 'get']
 
     def patch(self, request):
         user = self.request.user
@@ -43,7 +46,7 @@ class CartCleanAPIView(APIView):
         serializer = CartSerializer(cart, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=204)
         else:
             return Response(serializer.errors, status=400)
 
@@ -52,14 +55,14 @@ class CartProductAPIView(APIView):
     """ Класс для добавления продукта в корзину авторизованного пользователя, изменения количества или удаления """
 
     queryset = CartProduct.objects.all()
-    serializer_class = CartProductSerializer
+    serializer_class = CartProductUpdateSerializer
     permission_classes = [IsAuthenticated, IsOwner]
     http_method_names = ['post', 'patch', 'delete']
 
     def post(self, request):
         user = self.request.user
         cart = Cart.objects.get(user=user)
-        serializer = CartProductSerializer(data=request.data)
+        serializer = CartProductUpdateSerializer(data=request.data)
 
         if serializer.is_valid():
             product_id = serializer.validated_data['product_id']
@@ -70,7 +73,7 @@ class CartProductAPIView(APIView):
                 product_cart.save()
                 return Response(serializer.data, status=201)
             if quantity:
-                product_cart.quantity += quantity
+                product_cart.quantity = quantity
                 product_cart.save()
                 data = {"product_id": product_id, "quantity": product_cart.quantity}
                 return Response(data=data)

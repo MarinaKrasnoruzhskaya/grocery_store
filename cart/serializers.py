@@ -65,15 +65,15 @@ class CartProductSerializer(serializers.ModelSerializer):
 
 class CartProductUpdateSerializer(serializers.ModelSerializer):
 
-    product_id = serializers.IntegerField(read_only=True)
+    product_id = serializers.IntegerField()
     quantity = serializers.IntegerField()
 
     class Meta:
         model = CartProduct
         fields = ('product_id', 'quantity')
 
-    def update(self, instance, validated_data):
-        quantity = validated_data['quantity']
-        instance.quantity = quantity
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     quantity = validated_data['quantity']
+    #     instance.quantity = quantity
+    #     instance.save()
+    #     return instance
