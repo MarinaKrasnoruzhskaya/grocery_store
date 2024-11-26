@@ -19,3 +19,5 @@ referencing==0.35.1
 rpds-py==0.21.0
 sqlparse==0.5.2
 uritemplate==4.1.1
+
+python-magic~=0.4.27
