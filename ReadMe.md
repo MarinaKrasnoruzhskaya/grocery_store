@@ -22,6 +22,11 @@
    ```sh
    docker-compose up
    ```
+6. Запустить тестирование
+   ```sh
+   docker-compose exec app coverage run --source='.' manage.py test
+   docker-compose exec app coverage report -m
+   ```
 
 ## Инструкции по развертыванию проекта без Docker
 
@@ -59,6 +64,11 @@
 9. Создать суперпользователя
     ```sh
    python manage.py csu
+   ```
+10. Запустить тестирование
+   ```sh
+   coverage run --source='.' manage.py test
+   coverage report -m
    ```
 
 ## Документация проекта:
