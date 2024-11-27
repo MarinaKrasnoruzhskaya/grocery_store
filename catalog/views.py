@@ -14,6 +14,11 @@ class CategoryListAPIView(ListAPIView):
     serializer_class = CategorySerializer
     pagination_class = CustomPagination
 
+    def get_queryset(self):
+        """ Возвращает только категории товаров"""
+
+        return super().get_queryset().filter(category=None)
+
 
 class ProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """ Класс ViewSet для модели Product """
@@ -23,8 +28,3 @@ class ProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     parser_classes = (MultiPartParser, FormParser)
     pagination_class = CustomPagination
     http_method_names = ['get',]
-
-    # def get_serializer_class(self):
-    #     if self.action == 'create':
-    #         return ProductCreateSerializer
-    #     return ProductSerializer
