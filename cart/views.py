@@ -25,12 +25,6 @@ class CartAPIView(APIView):
             return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN, data={"message": "Нельзя просматривать чужую корзину"})
 
-    def get_queryset(self):
-        """ Получаем корзину текущего пользователя """
-        user = self.request.user
-        cart = Cart.objects.get(user=user)
-        return cart.cart_products.all()
-
 
 class CartCleanAPIView(APIView):
     """ Класс для полной очистки корзины авторизованного пользователя"""
