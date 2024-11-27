@@ -70,10 +70,12 @@ class CartProductAPIView(APIView):
             product_cart, created = CartProduct.objects.get_or_create(cart=cart, product_id=product_id)
             if created and quantity:
                 product_cart.quantity = quantity
+                product_cart.price_cart = product_cart.product.price
                 product_cart.save()
                 return Response(serializer.data, status=201)
             if quantity:
                 product_cart.quantity = quantity
+                product_cart.price_cart = product_cart.product.price
                 product_cart.save()
                 data = {"product_id": product_id, "quantity": product_cart.quantity}
                 return Response(data=data)

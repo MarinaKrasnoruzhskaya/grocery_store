@@ -47,6 +47,11 @@ class CartProduct(models.Model):
         verbose_name='продукт в корзине',
         related_name='cart_product'
     )
+    price_cart = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name='Стоимость продукта',
+        default=0.00)
     quantity = models.PositiveIntegerField(
         verbose_name='Количество продукта в корзине',
         default=1
