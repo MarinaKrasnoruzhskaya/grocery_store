@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from cart.models import Cart, CartProduct
-from catalog.models import Category, Subcategory, Product, ProductImage
+from catalog.models import Category, Product, ProductImage
 from catalog.services import get_test_file
 from users.models import User
 
@@ -17,12 +17,12 @@ class CartTestCase(APITestCase):
         self.client.force_authenticate(user=self.user)
         self.cart = Cart.objects.create(user=self.user)
         self.category = Category.objects.create(name='Категория тест', image=get_test_file('test.webp'))
-        self.subcategory = Subcategory.objects.create(
+        self.subcategory = Category.objects.create(
             category=self.category,
             name='Подкатегория тест',
             image=get_test_file('test.webp')
         )
-        self.subcategory_2 = Subcategory.objects.create(
+        self.subcategory_2 = Category.objects.create(
             category=self.category,
             name='Подкатегория тест 2',
             image=get_test_file('test.webp')
@@ -47,7 +47,9 @@ class CartTestCase(APITestCase):
             ProductImage.objects.create(product=self.product_2, image=get_test_file('test_2.jpeg')),
             ProductImage.objects.create(product=self.product_2, image=get_test_file('test_3.webp'))
         ]
-        self.cart_product = CartProduct.objects.create(cart=self.cart, product_id=self.product.id, quantity=5)
+        self.cart_product = CartProduct.objects.create(
+            cart=self.cart, product_id=self.product.id, quantity=5, price_cart=self.product.price
+        )
         self.quantity = 10
 
     def test_cart(self):
@@ -66,6 +68,7 @@ class CartTestCase(APITestCase):
                     'price': str(self.cart_product.product.price),
                     'product_images': images
                 },
+                    'price_cart': f"{self.cart_product.price_cart}.00",
                     'quantity': self.cart_product.quantity
                 }
             ],

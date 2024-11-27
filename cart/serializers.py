@@ -13,7 +13,7 @@ class CartProductGETSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CartProduct
-        fields = ('product', 'quantity')
+        fields = ('product', 'price_cart', 'quantity')
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -42,8 +42,7 @@ class CartSerializer(serializers.ModelSerializer):
         total = 0
         cart_products = CartProduct.objects.filter(cart=obj)
         for cart_product in cart_products:
-            product = Product.objects.get(pk=cart_product.product.pk)
-            total += product.price * cart_product.quantity
+            total += cart_product.price_cart * cart_product.quantity
         return total
 
     def update(self, instance, validated_data):
